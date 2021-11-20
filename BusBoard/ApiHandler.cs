@@ -18,7 +18,7 @@ namespace BusBoard
 
         public string MakeRequest(string requestString)
         {
-            RestRequest request = new RestRequest(requestString,DataFormat.Json);
+            RestRequest request = new RestRequest(requestString, DataFormat.Json);
             request.OnBeforeDeserialization = resp => { resp.ContentType = "application/json"; };
             IRestResponse response = _client.Get(request);
             return response.Content;
