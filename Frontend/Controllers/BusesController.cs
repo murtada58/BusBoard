@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using BusBoard;
 using Frontend.Models;
@@ -20,7 +21,16 @@ namespace Frontend.Controllers
         public IActionResult Arrivals([FromRoute] string postcode)
         { 
             var tflRequestHandler = new TflRequestHandler();
-            var busStops = tflRequestHandler.GetNextBusArrivalsNearPostcode(postcode, 2, 5);
+            var busStops = new List<TflBusStopResponse>();
+            try
+            {
+                busStops = tflRequestHandler.GetNextBusArrivalsNearPostcode(postcode, 2, 5);
+            }
+            catch (Exception e)
+            {
+                //Console.WriteLine(e);
+                return View(new List<TflBusStopResponse>());
+            }
             return View(busStops);
         }
         

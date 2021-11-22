@@ -10,18 +10,24 @@
     <input type="text" id="postcode" name="postcode" placeholder="Type your postcode here">
     <input type="submit" value="Submit">
 </form>
-
-<ol>
-    @foreach (var busStop in Model)
-    {
-        <li>
-            <h2>Buses Arriving At @busStop.CommonName:</h2>
-            <ol>
-                @foreach (var arrival in busStop.Arrivals)
-                {
-                    <li>@arrival.LineId to @arrival.DestinationName arriving in @Math.Round((arrival.ExpectedArrival - DateTime.Now).TotalMinutes) mins</li>   
-                }
-            </ol>
-        </li>
-    }
-</ol>
+@if (Model.Count != 0)
+{
+    <ol>
+        @foreach (var busStop in Model)
+        {
+            <li>
+                <h2>Buses Arriving At @busStop.CommonName:</h2>
+                <ol>
+                    @foreach (var arrival in busStop.Arrivals)
+                    {
+                        <li>@arrival.LineId to @arrival.DestinationName arriving in @Math.Round((arrival.ExpectedArrival - DateTime.Now).TotalMinutes) mins</li>   
+                    }
+                </ol>
+            </li>
+        }
+    </ol>
+}
+else
+{
+    <h1>That was an invalid postcode please try again</h1>
+}
