@@ -47,6 +47,8 @@ namespace BusBoard
             PostcodeResponseResult postcodeResponse = _postcodeRequestHandler.GetPostcodeResponse(postcode);
             TflBusStopsResponse busStopsResponse = GetNearestBusStops(postcodeResponse.Longitude, postcodeResponse.Latitude, numberOfBusStops);
             busStopsResponse.Postcode = postcode;
+            busStopsResponse.NumberOfBusStops = numberOfBusStops;
+            busStopsResponse.NumberOfBuses = numberOfBuses;
             foreach (TflBusStopResponse busStop in busStopsResponse.StopPoints)
             {
                 busStop.Arrivals = GetNextBusArrivals(busStop.Id, numberOfBuses);

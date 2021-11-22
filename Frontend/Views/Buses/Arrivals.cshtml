@@ -8,6 +8,13 @@
 <form action="/buses/arrivals" method="GET">
     <label for="postcode">Postcode:</label>
     <input type="text" id="postcode" name="postcode" placeholder="Type your postcode here" value="@Model.Postcode">
+    <br>
+    <label for="numberOfBusStops">Number of bus stops:</label>
+    <input type="text" id="numberOfBusStops" name="numberOfBusStops" placeholder="Number of bus stops" value="@Model.NumberOfBusStops">
+    <br>
+    <label for="numberOfBusStops">Number of buses:</label>
+    <input type="text" id="numberOfBuses" name="numberOfBuses" placeholder="Number of buses" value="@Model.NumberOfBuses">
+    <br>
     <input type="submit" value="Submit">
 </form>
 @if (Model.valid)
@@ -29,7 +36,7 @@
     <script>
         setInterval(() =>
         {
-            window.location.replace("/buses/arrivals?postcode=@Model.Postcode");
+            window.location.replace("/buses/arrivals?postcode=@Model.Postcode&numberOfBusStops=@Model.NumberOfBusStops&numberOfBuses=@Model.NumberOfBuses");
         }, 30000);  
     </script>
 }

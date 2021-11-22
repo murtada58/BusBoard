@@ -24,7 +24,7 @@ namespace Frontend.Controllers
             var tflRequestHandler = new TflRequestHandler();
             try
             {
-                var busStopsResponse = tflRequestHandler.GetNextBusArrivalsNearPostcode(form.Postcode, 2, 5);
+                var busStopsResponse = tflRequestHandler.GetNextBusArrivalsNearPostcode(form.Postcode, form.NumberOfBusStops, form.NumberOfBuses);
                 busStopsResponse.valid = true;
                 return View(busStopsResponse);
             }
