@@ -4,6 +4,8 @@ namespace BusBoard
 {
     public class TflBusStopsResponse
     {
+        public bool valid;
+        public string Postcode;
         public List<TflBusStopResponse> StopPoints;
     }
 }

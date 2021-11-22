@@ -1,41 +1,44 @@
-@model List<BusBoard.TflBusStopResponse>
+@model BusBoard.TflBusStopsResponse
 
 @{
     //Layout = null;
     ViewBag.Title = "Next Bus Arrivals";
 }
 
-<form action="/buses/arrivals" method="post">
+<form action="/buses/arrivals" method="GET">
     <label for="postcode">Postcode:</label>
-    <input type="text" id="postcode" name="postcode" placeholder="Type your postcode here">
+    <input type="text" id="postcode" name="postcode" placeholder="Type your postcode here" value="@Model.Postcode">
     <input type="submit" value="Submit">
 </form>
-@if (Model.Count != 0)
+@if (Model.valid)
 {
-    <ol>
-        @foreach (var busStop in Model)
+    @foreach (var busStop in Model.StopPoints)
+    {
+        <h2>Buses Arriving At @busStop.CommonName:</h2>
+        <ol>
+            @foreach (var arrival in busStop.Arrivals)
+            {
+                <li>@arrival.LineId to @arrival.DestinationName arriving in @Math.Ceiling((arrival.ExpectedArrival - DateTime.Now).TotalMinutes) mins</li>   
+            }
+        </ol>
+    }
+}
+
+@if (@Model.valid)
+{
+    <script>
+        setInterval(() =>
         {
-            <li>
-                <h2>Buses Arriving At @busStop.CommonName:</h2>
-                <ol>
-                    @foreach (var arrival in busStop.Arrivals)
-                    {
-                        <li>@arrival.LineId to @arrival.DestinationName arriving in @Math.Round((arrival.ExpectedArrival - DateTime.Now).TotalMinutes) mins</li>   
-                    }
-                </ol>
-            </li>
-        }
-    </ol>
+            window.location.replace("/buses/arrivals?postcode=@Model.Postcode");
+        }, 30000);  
+    </script>
 }
 else
 {
-    <h1>That was an invalid postcode please try again</h1>
+    <script>
+        if ("@Model.Postcode" !== "")
+        {
+            alert("@Model.Postcode is not a valid postcode please try again");
+        }
+    </script>
 }
-
-<script>
-/*
-setInterval(() => {
-    window.location.replace("/buses/arrivals/HA9 9PN");
-}, 3000);
- */
-</script>

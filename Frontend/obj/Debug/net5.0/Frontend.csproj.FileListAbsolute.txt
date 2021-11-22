@@ -47,4 +47,3 @@ C:\Work\Training\BusBoard\Frontend\bin\Debug\net5.0\RestSharp.dll
 C:\Work\Training\BusBoard\Frontend\bin\Debug\net5.0\BusBoard.dll
 C:\Work\Training\BusBoard\Frontend\bin\Debug\net5.0\BusBoard.pdb
 C:\Work\Training\BusBoard\Frontend\obj\Debug\net5.0\Razor\Views\Buses\Arrivals.cshtml.g.cs
-C:\Work\Training\BusBoard\Frontend\obj\Debug\net5.0\Razor\Views\Buses\GetArrivals.cshtml.g.cs

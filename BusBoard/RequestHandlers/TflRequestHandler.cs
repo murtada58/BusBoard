@@ -15,7 +15,10 @@ namespace BusBoard
         {
             List<TflArrivalResponse> arrivals = JsonConvert.DeserializeObject<List<TflArrivalResponse>>(_apiHandler.MakeRequest($"StopPoint/{busStop}/Arrivals"));
             if (arrivals == null) { return new List<TflArrivalResponse>(); }
-            return arrivals.GetRange(0, Math.Min(numberOfBuses, arrivals.Count));
+
+            arrivals = arrivals.GetRange(0, Math.Min(numberOfBuses, arrivals.Count));
+            arrivals = arrivals.OrderBy(arrival => arrival.ExpectedArrival).ToList();
+            return arrivals;
         }
         
         public void PrintNextBusArrivals(string busStop, int numberOfBuses, string busStopName = "")
@@ -25,34 +28,37 @@ namespace BusBoard
             List<TflArrivalResponse> arrivals = GetNextBusArrivals(busStop, numberOfBuses);
             foreach (TflArrivalResponse arrival in arrivals.OrderBy(arrival => arrival.ExpectedArrival))
             {
-                Console.WriteLine($"    {arrival.LineId} to {arrival.DestinationName} arriving in {Math.Round((arrival.ExpectedArrival - DateTime.Now).TotalMinutes)} mins");
+                Console.WriteLine($"    {arrival.LineId} to {arrival.DestinationName} arriving in {Math.Ceiling((arrival.ExpectedArrival - DateTime.Now).TotalMinutes)} mins");
             }
         }
 
-        public List<TflBusStopResponse> GetNearestBusStops(float longitude, float latitude, int numberOfBusStops)
+        public TflBusStopsResponse GetNearestBusStops(float longitude, float latitude, int numberOfBusStops)
         {
             string rawResponse = _apiHandler.MakeRequest($"StopPoint/?lat={latitude}&lon={longitude}&stopTypes=NaptanPublicBusCoachTram");
             TflBusStopsResponse busStopsResponse = JsonConvert.DeserializeObject<TflBusStopsResponse>(rawResponse);
-            if (busStopsResponse == null) { return new List<TflBusStopResponse>(); } 
-            return busStopsResponse.StopPoints.GetRange(0, Math.Min(numberOfBusStops, busStopsResponse.StopPoints.Count));
+            if (busStopsResponse == null) { return new TflBusStopsResponse(); }
+
+            busStopsResponse.StopPoints = busStopsResponse.StopPoints.GetRange(0, Math.Min(numberOfBusStops, busStopsResponse.StopPoints.Count));
+            return busStopsResponse;
         }
 
-        public List<TflBusStopResponse> GetNextBusArrivalsNearPostcode(string postcode, int numberOfBusStops, int numberOfBuses)
+        public TflBusStopsResponse GetNextBusArrivalsNearPostcode(string postcode, int numberOfBusStops, int numberOfBuses)
         {
             PostcodeResponseResult postcodeResponse = _postcodeRequestHandler.GetPostcodeResponse(postcode);
-            List<TflBusStopResponse> busStops = GetNearestBusStops(postcodeResponse.Longitude, postcodeResponse.Latitude, numberOfBusStops);
-            foreach (TflBusStopResponse busStop in busStops)
+            TflBusStopsResponse busStopsResponse = GetNearestBusStops(postcodeResponse.Longitude, postcodeResponse.Latitude, numberOfBusStops);
+            busStopsResponse.Postcode = postcode;
+            foreach (TflBusStopResponse busStop in busStopsResponse.StopPoints)
             {
                 busStop.Arrivals = GetNextBusArrivals(busStop.Id, numberOfBuses);
             }
 
-            return busStops;
+            return busStopsResponse;
         }
         
         public void PrintNextBusArrivalsNearPostcode(string postcode, int numberOfBusStops, int numberOfBuses)
         {
-            List<TflBusStopResponse> busStops = GetNextBusArrivalsNearPostcode(postcode, numberOfBusStops, numberOfBuses);
-            foreach (TflBusStopResponse busStop in busStops)
+            TflBusStopsResponse busStopsResponse = GetNextBusArrivalsNearPostcode(postcode, numberOfBusStops, numberOfBuses);
+            foreach (TflBusStopResponse busStop in busStopsResponse.StopPoints)
             {
                 PrintNextBusArrivals(busStop.Id, numberOfBuses, busStop.CommonName);
             }

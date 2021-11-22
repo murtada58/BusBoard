@@ -4,6 +4,7 @@ using System.Diagnostics;
 using BusBoard;
 using Frontend.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Logging;
 
 namespace Frontend.Controllers
@@ -17,35 +18,26 @@ namespace Frontend.Controllers
             _logger = logger;
         }
         
-        [HttpGet("buses/arrivals/{postcode}")]
-        public IActionResult Arrivals([FromRoute] string postcode)
-        { 
+        [HttpGet("buses/arrivals")]
+        public IActionResult Arrivals([FromQuery] PostcodeForm form)
+        {
             var tflRequestHandler = new TflRequestHandler();
             try
             {
-                var busStops = tflRequestHandler.GetNextBusArrivalsNearPostcode(postcode, 2, 5);
-                return View(busStops);
+                var busStopsResponse = tflRequestHandler.GetNextBusArrivalsNearPostcode(form.Postcode, 2, 5);
+                busStopsResponse.valid = true;
+                return View(busStopsResponse);
             }
             catch (Exception e)
             {
-                return View(new List<TflBusStopResponse>());
-                //Console.WriteLine(e);
-                //throw;
+                Console.WriteLine(e);
+                var busStopsResponse = new TflBusStopsResponse();
+                busStopsResponse.valid = false;
+                busStopsResponse.Postcode = form.Postcode;
+                return View(busStopsResponse);
             }
         }
-        
-        [HttpGet("buses/arrivals")]
-        public IActionResult GetArrivals()
-        {
-            return View();
-        }
-        
-        [HttpPost("buses/arrivals")]
-        public void GetArrivals(string postcode)
-        {
-            Response.Redirect("arrivals/" + postcode);
-        }
-        
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
