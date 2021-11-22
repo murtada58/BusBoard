@@ -21,17 +21,17 @@ namespace Frontend.Controllers
         public IActionResult Arrivals([FromRoute] string postcode)
         { 
             var tflRequestHandler = new TflRequestHandler();
-            var busStops = new List<TflBusStopResponse>();
             try
             {
-                busStops = tflRequestHandler.GetNextBusArrivalsNearPostcode(postcode, 2, 5);
+                var busStops = tflRequestHandler.GetNextBusArrivalsNearPostcode(postcode, 2, 5);
+                return View(busStops);
             }
             catch (Exception e)
             {
-                //Console.WriteLine(e);
                 return View(new List<TflBusStopResponse>());
+                //Console.WriteLine(e);
+                //throw;
             }
-            return View(busStops);
         }
         
         [HttpGet("buses/arrivals")]
