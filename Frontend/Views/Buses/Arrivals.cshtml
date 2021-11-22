@@ -1,0 +1,27 @@
+@model List<BusBoard.TflBusStopResponse>
+
+@{
+    //Layout = null;
+    ViewBag.Title = "Next Bus Arrivals";
+}
+
+<form action="/buses/arrivals" method="post">
+    <label for="postcode">Postcode:</label>
+    <input type="text" id="postcode" name="postcode" placeholder="Type your postcode here">
+    <input type="submit" value="Submit">
+</form>
+
+<ol>
+    @foreach (var busStop in Model)
+    {
+        <li>
+            <h2>Buses Arriving At @busStop.CommonName:</h2>
+            <ol>
+                @foreach (var arrival in busStop.Arrivals)
+                {
+                    <li>@arrival.LineId to @arrival.DestinationName arriving in @Math.Round((arrival.ExpectedArrival - DateTime.Now).TotalMinutes) mins</li>   
+                }
+            </ol>
+        </li>
+    }
+</ol>

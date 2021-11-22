@@ -36,11 +36,22 @@ namespace BusBoard
             if (busStopsResponse == null) { return new List<TflBusStopResponse>(); } 
             return busStopsResponse.StopPoints.GetRange(0, Math.Min(numberOfBusStops, busStopsResponse.StopPoints.Count));
         }
-        
-        public void PrintNextBusArrivalsNearPostcode(string postcode, int numberOfBusStops, int numberOfBuses)
+
+        public List<TflBusStopResponse> GetNextBusArrivalsNearPostcode(string postcode, int numberOfBusStops, int numberOfBuses)
         {
             PostcodeResponseResult postcodeResponse = _postcodeRequestHandler.GetPostcodeResponse(postcode);
             List<TflBusStopResponse> busStops = GetNearestBusStops(postcodeResponse.Longitude, postcodeResponse.Latitude, numberOfBusStops);
+            foreach (TflBusStopResponse busStop in busStops)
+            {
+                busStop.Arrivals = GetNextBusArrivals(busStop.Id, numberOfBuses);
+            }
+
+            return busStops;
+        }
+        
+        public void PrintNextBusArrivalsNearPostcode(string postcode, int numberOfBusStops, int numberOfBuses)
+        {
+            List<TflBusStopResponse> busStops = GetNextBusArrivalsNearPostcode(postcode, numberOfBusStops, numberOfBuses);
             foreach (TflBusStopResponse busStop in busStops)
             {
                 PrintNextBusArrivals(busStop.Id, numberOfBuses, busStop.CommonName);
